@@ -19,7 +19,7 @@ jobs:
         docker images        
     - name: Deploy to minikube
       run:
-        kubectl apply -f .github/workflows/demo.yml
+        kubectl apply -f .github/workflows/deploy-minikube.yml
     - name: Test service URLs
       run: |
         minikube service list
