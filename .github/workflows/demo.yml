@@ -1,30 +1,20 @@
-name: CI
-on: push
-jobs:
-  job1:
-    runs-on: ubuntu-latest
-    name: build example and deploy to minikube
-    steps:
-    - uses: actions/checkout@v2
-    - name: Start minikube
-      uses: medyagh/setup-minikube@master
-    - name: Try the cluster !
-      run: kubectl get pods -A
-    - name: Build image
-      run: |
-        export SHELL=/bin/bash
-        eval $(minikube -p minikube docker-env)
-        docker build -f ./Dockerfile -t local/example .
-        echo -n "verifying images:"
-        docker images        
-    - name: Deploy to minikube
-      run:
-        kubectl apply -f .github/workflows/deploy-minikube.yaml
-    - name: Test service URLs
-      run: |
-        minikube service list
-        minikube service example --url
-        echo "------------------opening the service------------------"
-        curl $(minikube service example --url) 
+name: "Create cluster using Minikube"
+on: [pull_request, push]
 
-           
+jobs:
+  minikube-test:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@master
+    - uses: opsgang/ga-setup-minikube@v0.1.1
+      with:
+        minikube-version: 1.4.0
+        k8s-version: 1.15.1
+    - name: Testing
+      run: |
+        minikube config set vm-driver docker
+        minikube config set kubernetes-version v1.15.1
+        minikube start
+        minikube update-context
+        kubectl cluster-info
+        kubectl get pods -n kube-system
