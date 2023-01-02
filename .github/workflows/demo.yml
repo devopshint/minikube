@@ -27,5 +27,5 @@ jobs:
       run: |
         minikube service list
         minikube service discover --url
-        echo -n "------------------opening the service------------------"
+        echo  "------------------opening the service------------------"
         curl $(minikube service discover --url)/version
